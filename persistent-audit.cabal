@@ -26,9 +26,10 @@ library
                      , bytestring
                      , hashable
                      , mongoDB
-                     , persistent  >= 2.2
+                     , esqueleto
+                     , persistent
                      , persistent-mongoDB
-                     , persistent-parser == 0.1.*
+                     , persistent-parser
                      , persistent-template
                      , text
                      , time

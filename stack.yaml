@@ -4,8 +4,12 @@ packages:
 - '.'
 
 extra-deps:
-- persistent-mongoDB-2.5.0.1
-- persistent-parser-0.1.0.2
+    - esqueleto-2.4.3
+    - persistent-2.2.4.1
+    - persistent-mongoDB-2.1.4
+    - persistent-parser-0.1.0.2
+    - persistent-sqlite-2.2.1
+    - persistent-template-2.1.8.1
 
 flags: {}
 

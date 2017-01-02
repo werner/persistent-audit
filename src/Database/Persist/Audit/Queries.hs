@@ -43,7 +43,7 @@ insertAndAudit :: ( MonadIO m
                   , PersistEntity val
                   , PersistEntity (AuditResult val)
                   , PersistStore backend
-                  , PersistUniqueWrite backend
+                  , PersistUnique backend
                   , ToAudit val) =>
                   val ->
                   Text ->
