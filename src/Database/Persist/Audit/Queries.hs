@@ -43,15 +43,20 @@ insertAndAudit :: ( MonadIO m
                   , PersistEntity val
                   , PersistEntity (AuditResult val)
                   , PersistStore backend
+                  , PersistUniqueWrite backend
                   , ToAudit val) =>
                   val ->
                   Text ->
-                  ReaderT backend m (Key val)
+                  ReaderT backend m (Either (Entity val) (Key val))
 insertAndAudit val userName = do
-  key <- insert val
-  now <- liftIO $ getCurrentTime
-  _ <- insert (toAudit val key Database.Persist.Audit.Types.Create userName now)
-  return key
+  eitherKey <- insertBy val
+  case eitherKey of
+      Left err  -> return Nothing
+      Right key -> do
+          now <- liftIO $ getCurrentTime
+          _   <- insert (toAudit val key Database.Persist.Audit.Types.Create userName now)
+          return Nothing
+  return eitherKey
 
 -- | Run Persistent 'insertUnique' and insert data into the corresponding audit table.
 insertUniqueAndAudit :: ( MonadIO m
