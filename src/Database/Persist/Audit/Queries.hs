@@ -43,12 +43,32 @@ insertAndAudit :: ( MonadIO m
                   , PersistEntity val
                   , PersistEntity (AuditResult val)
                   , PersistStore backend
+                  , ToAudit val) =>
+                  val ->
+                  Text ->
+                  ReaderT backend m (Key val)
+insertAndAudit val userName = do
+  key <- insert val
+  now <- liftIO $ getCurrentTime
+  _ <- insert (toAudit val key Database.Persist.Audit.Types.Create userName now)
+  return key
+
+-- | Run Persistent 'insertBy' and insert data into the corresponding audit table.
+insertAndAuditBy :: ( MonadIO m
+#if MIN_VERSION_persistent(2,5,0)
+                  , backend ~ BaseBackend backend
+#endif
+                  , backend ~ PersistEntityBackend val
+                  , backend ~ PersistEntityBackend (AuditResult val)
+                  , PersistEntity val
+                  , PersistEntity (AuditResult val)
+                  , PersistStore backend
                   , PersistUnique backend
                   , ToAudit val) =>
                   val ->
                   Text ->
                   ReaderT backend m (Either (Entity val) (Key val))
-insertAndAudit val userName = do
+insertAndAuditBy val userName = do
   eitherKey <- insertBy val
   case eitherKey of
       Left err  -> return Nothing
